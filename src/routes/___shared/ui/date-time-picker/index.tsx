@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Button } from '../button';
 import { Drawer, DrawerContent } from '../drawer';
 import { Input } from '../input';
-import { Tabs, TabsList, TabsTrigger, TabsContent } from '../tabs';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '../tabs';
 import { WheelPicker, WheelPickerWrapper } from '../wheel-picker';
 
 interface DateTimePickerProps {
@@ -133,23 +133,6 @@ export default function DateTimePicker({
     );
   };
 
-  const Clock = (props: React.SVGProps<SVGSVGElement>) => {
-    return (
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        width="32"
-        height="32"
-        fill="currentColor"
-        viewBox="0 0 256 256"
-        {...props}
-      >
-        <title>Clock</title>
-        <path d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm0,192a88,88,0,1,1,88-88A88.1,88.1,0,0,1,128,216Z"></path>
-        <path d="M128,64a8,8,0,0,0-8,8v56a8,8,0,0,0,4,6.93l32,18.67a8,8,0,0,0,8-13.86L136,123.26V72A8,8,0,0,0,128,64Z"></path>
-      </svg>
-    );
-  };
-
   const SmallX = (props: React.SVGProps<SVGSVGElement>) => {
     return (
       <svg
@@ -205,7 +188,6 @@ export default function DateTimePicker({
         )}
         <div className="absolute right-3 top-1/2 -translate-y-1/2 flex gap-1 pointer-events-none">
           <Calendar className="h-4 w-4 text-muted-foreground" />
-          <Clock className="h-4 w-4 text-muted-foreground" />
         </div>
       </div>
       <Drawer open={open} onOpenChange={setOpen}>

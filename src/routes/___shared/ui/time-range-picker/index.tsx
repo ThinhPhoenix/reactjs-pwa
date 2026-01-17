@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Button } from '../button';
 import { Drawer, DrawerContent } from '../drawer';
 import { Input } from '../input';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '../tabs';
 import { WheelPicker, WheelPickerWrapper } from '../wheel-picker';
 
 interface TimeRange {
@@ -18,7 +19,7 @@ interface TimeRangePickerProps {
 export default function TimeRangePicker({
   value,
   onValueChange,
-  placeholder = 'Select time range',
+  placeholder = '',
 }: TimeRangePickerProps) {
   const [open, setOpen] = useState(false);
   const [mode, setMode] = useState<'start' | 'end'>('start');
@@ -121,8 +122,7 @@ export default function TimeRangePicker({
         viewBox="0 0 256 256"
         {...props}
       >
-        <path d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm0,192a88,88,0,1,1,88-88A88.1,88.1,0,0,1,128,216Z"></path>
-        <path d="M128,64a8,8,0,0,0-8,8v56a8,8,0,0,0,4,6.93l32,18.67a8,8,0,0,0,8-13.86L136,123.26V72A8,8,0,0,0,128,64Z"></path>
+        <path d="M232,136.66A104.12,104.12,0,1,1,119.34,24,8,8,0,0,1,120.66,40,88.12,88.12,0,1,0,216,135.34,8,8,0,0,1,232,136.66ZM120,72v56a8,8,0,0,0,8,8h56a8,8,0,0,0,0-16H136V72a8,8,0,0,0-16,0Zm40-24a12,12,0,1,0-12-12A12,12,0,0,0,160,48Zm36,24a12,12,0,1,0-12-12A12,12,0,0,0,196,72Zm24,36a12,12,0,1,0-12-12A12,12,0,0,0,220,108Z"></path>
       </svg>
     );
   };
@@ -157,10 +157,6 @@ export default function TimeRangePicker({
     return `${start} - ${end}`;
   };
 
-  const currentHour = mode === 'start' ? startHour : endHour;
-  const currentMinute = mode === 'start' ? startMinute : endMinute;
-  const currentPeriod = mode === 'start' ? startPeriod : endPeriod;
-
   return (
     <>
       <div className="relative">
@@ -193,56 +189,67 @@ export default function TimeRangePicker({
       <Drawer open={open} onOpenChange={setOpen}>
         <DrawerContent>
           <div className="p-4">
-            <div className="flex gap-2 mb-4">
-              <Button
-                variant={mode === 'start' ? 'default' : 'outline'}
-                size="sm"
-                onClick={() => setMode('start')}
-                className="flex-1"
-              >
-                Start Time
-              </Button>
-              <Button
-                variant={mode === 'end' ? 'default' : 'outline'}
-                size="sm"
-                onClick={() => setMode('end')}
-                className="flex-1"
-              >
-                End Time
-              </Button>
-            </div>
-            <WheelPickerWrapper>
-              <WheelPicker
-                options={hourOptions}
-                value={currentHour}
-                onValueChange={(val) => {
-                  if (mode === 'start') setStartHour(val);
-                  else setEndHour(val);
-                }}
-                infinite
-                visibleCount={12}
-              />
-              <WheelPicker
-                options={minuteOptions}
-                value={currentMinute}
-                onValueChange={(val) => {
-                  if (mode === 'start') setStartMinute(val);
-                  else setEndMinute(val);
-                }}
-                infinite
-                visibleCount={12}
-              />
-              <WheelPicker
-                options={periodOptions}
-                value={currentPeriod}
-                onValueChange={(val) => {
-                  if (mode === 'start') setStartPeriod(val);
-                  else setEndPeriod(val);
-                }}
-                infinite={false}
-                visibleCount={12}
-              />
-            </WheelPickerWrapper>
+            <Tabs
+              value={mode}
+              onValueChange={(val) => setMode(val as 'start' | 'end')}
+            >
+              <TabsList className="grid w-full grid-cols-2">
+                <TabsTrigger value="start">Start Time</TabsTrigger>
+                <TabsTrigger value="end">End Time</TabsTrigger>
+              </TabsList>
+
+              <TabsContent value="start" className="mt-4">
+                <WheelPickerWrapper>
+                  <WheelPicker
+                    options={hourOptions}
+                    value={startHour}
+                    onValueChange={setStartHour}
+                    infinite
+                    visibleCount={12}
+                  />
+                  <WheelPicker
+                    options={minuteOptions}
+                    value={startMinute}
+                    onValueChange={setStartMinute}
+                    infinite
+                    visibleCount={12}
+                  />
+                  <WheelPicker
+                    options={periodOptions}
+                    value={startPeriod}
+                    onValueChange={setStartPeriod}
+                    infinite={false}
+                    visibleCount={12}
+                  />
+                </WheelPickerWrapper>
+              </TabsContent>
+
+              <TabsContent value="end" className="mt-4">
+                <WheelPickerWrapper>
+                  <WheelPicker
+                    options={hourOptions}
+                    value={endHour}
+                    onValueChange={setEndHour}
+                    infinite
+                    visibleCount={12}
+                  />
+                  <WheelPicker
+                    options={minuteOptions}
+                    value={endMinute}
+                    onValueChange={setEndMinute}
+                    infinite
+                    visibleCount={12}
+                  />
+                  <WheelPicker
+                    options={periodOptions}
+                    value={endPeriod}
+                    onValueChange={setEndPeriod}
+                    infinite={false}
+                    visibleCount={12}
+                  />
+                </WheelPickerWrapper>
+              </TabsContent>
+            </Tabs>
             <div className="flex justify-end gap-2 mt-4">
               <Button variant="outline" onClick={() => setOpen(false)}>
                 Cancel
