@@ -14,7 +14,7 @@ interface DatePickerProps {
 export default function DatePicker({
   value,
   onValueChange,
-  placeholder = 'Select date',
+  placeholder = '',
 }: DatePickerProps) {
   const [open, setOpen] = useState(false);
   const [selectedYear, setSelectedYear] = useState<number>();
