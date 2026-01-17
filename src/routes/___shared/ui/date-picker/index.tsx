@@ -16,6 +16,7 @@ export default function DatePicker({
   onValueChange,
   placeholder = '',
 }: DatePickerProps) {
+  const triggerHaptics = useHaptics();
   const [open, setOpen] = useState(false);
   const [selectedYear, setSelectedYear] = useState<number>();
   const [selectedMonth, setSelectedMonth] = useState<number>();
@@ -99,10 +100,10 @@ export default function DatePicker({
 
   return (
     <>
-      <div className="relative" onClick={() => useHaptics()}>
+      <div className="relative" onClick={() => triggerHaptics()}>
         <Input
           readOnly
-          onPointerDown={() => useHaptics()}
+          onPointerDown={() => triggerHaptics()}
           onFocus={() => setOpen(true)}
           onClick={() => setOpen(true)}
           value={value ? value.toLocaleDateString('en-US') : ''}
@@ -118,15 +119,15 @@ export default function DatePicker({
             title="Clear date"
             onPointerDown={(e) => {
               e.stopPropagation();
-              useHaptics();
+              triggerHaptics();
             }}
             onTouchStart={(e) => {
               e.stopPropagation();
-              useHaptics();
+              triggerHaptics();
             }}
             onMouseDown={(e) => {
               e.stopPropagation();
-              useHaptics();
+              triggerHaptics();
             }}
             onClick={(e) => {
               e.stopPropagation();

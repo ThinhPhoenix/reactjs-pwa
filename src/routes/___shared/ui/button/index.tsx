@@ -1,9 +1,10 @@
 import { Slot } from '@radix-ui/react-slot';
 import { cva, type VariantProps } from 'class-variance-authority';
-import * as React from 'react';
+import type * as React from 'react';
 
 import { cn } from '@/helpers/utils';
 import { useHaptics } from '../../hooks/common/use-haptics';
+import { Spinner } from '../spinner';
 
 const buttonVariants = cva(
   "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive",
@@ -43,12 +44,17 @@ function Button({
   size = 'default',
   asChild = false,
   onClick,
+  isLoading = false,
+  children,
+  disabled,
   ...props
 }: React.ComponentProps<'button'> &
   VariantProps<typeof buttonVariants> & {
     asChild?: boolean;
+    isLoading?: boolean;
   }) {
   const Comp = asChild ? Slot : 'button';
+  const triggerHaptics = useHaptics();
 
   return (
     <Comp
@@ -56,12 +62,16 @@ function Button({
       data-variant={variant}
       data-size={size}
       className={cn(buttonVariants({ variant, size, className }))}
+      disabled={disabled || isLoading}
       onClick={(e) => {
         onClick?.(e as React.MouseEvent<HTMLButtonElement>);
-        useHaptics();
+        triggerHaptics();
       }}
       {...props}
-    />
+    >
+      {isLoading && <Spinner className="size-4" />}
+      {children}
+    </Comp>
   );
 }
 

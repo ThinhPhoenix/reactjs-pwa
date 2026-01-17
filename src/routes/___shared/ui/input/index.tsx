@@ -1,4 +1,4 @@
-import * as React from 'react';
+import type * as React from 'react';
 import { useState } from 'react';
 
 import { cn } from '@/helpers/utils';
@@ -6,6 +6,7 @@ import { useHaptics } from '../../hooks/common/use-haptics';
 
 function Input({ className, type, ...props }: React.ComponentProps<'input'>) {
   const [show, setShow] = useState(false);
+  const triggerHaptics = useHaptics();
   const isPassword = type === 'password';
 
   const Eye = (props: React.SVGProps<SVGSVGElement>) => {
@@ -41,7 +42,7 @@ function Input({ className, type, ...props }: React.ComponentProps<'input'>) {
   return (
     <div
       className={cn('relative', isPassword && 'w-full')}
-      onClick={() => useHaptics()}
+      onClick={() => triggerHaptics()}
     >
       <input
         type={isPassword ? (show ? 'text' : 'password') : type}

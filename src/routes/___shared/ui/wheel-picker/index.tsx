@@ -59,6 +59,7 @@ function WheelPicker<T extends WheelPickerValue>({
   optionItemHeight: optionHeightProp = 30,
   classNames,
 }: WheelPickerProps<T>) {
+  const triggerHaptics = useHaptics();
   const [value = optionsProp[0]?.value, setValue] = useControllableState<T>({
     defaultProp: defaultValue,
     prop: valueProp,
@@ -319,7 +320,7 @@ function WheelPicker<T extends WheelPickerValue>({
     scrollRef.current = scrollTo(boundedScroll);
     const selected = options[scrollRef.current];
     setValue(selected.value);
-    useHaptics();
+    triggerHaptics();
   };
 
   const selectByValue = (value: T) => {
@@ -333,7 +334,7 @@ function WheelPicker<T extends WheelPickerValue>({
     cancelAnimation();
     selectByScroll(index);
     // Also give haptic feedback when selection is set programmatically
-    useHaptics();
+    triggerHaptics();
   };
 
   const scrollByStep = (step: number) => {
