@@ -1,11 +1,13 @@
-import i18n from '@/helpers/i18n';
 import { createFileRoute } from '@tanstack/react-router';
+import i18n from '@/helpers/i18n';
 import { Button } from './___shared/ui/button';
 import DatePicker from './___shared/ui/date-picker';
 import DateRangePicker from './___shared/ui/date-range-picker';
 import DateTimePicker from './___shared/ui/date-time-picker';
 import { Input } from './___shared/ui/input';
+import { Switch } from './___shared/ui/switch';
 import { Textarea } from './___shared/ui/textarea';
+import ThemeToggle from './___shared/ui/theme-toggle';
 import TimePicker from './___shared/ui/time-picker';
 import TimeRangePicker from './___shared/ui/time-range-picker';
 
@@ -16,6 +18,10 @@ export const Route = createFileRoute('/')({
 function RouteComponent() {
   return (
     <div className="p-4 flex flex-col gap-4">
+      <div className="flex justify-between items-center">
+        <h1 className="text-2xl font-bold">UI Components</h1>
+        <ThemeToggle />
+      </div>
       <h1>Buttons</h1>
       <div className="flex flex-wrap gap-2">
         <Button>{i18n.t('common:loadTodos')}</Button>
@@ -36,7 +42,8 @@ function RouteComponent() {
         <DateRangePicker />
         <DateTimePicker />
         <TimeRangePicker />
-        <Textarea overlay />
+        <Textarea />
+        <Switch />
       </div>
     </div>
   );

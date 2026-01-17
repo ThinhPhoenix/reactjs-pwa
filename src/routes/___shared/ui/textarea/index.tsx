@@ -12,7 +12,7 @@ type TextareaProps = React.ComponentProps<'textarea'> & {
 function Textarea({
   className,
   resize = 'vertical',
-  overlay = false,
+  overlay = true,
   onClose,
   ...props
 }: TextareaProps) {
