@@ -319,6 +319,7 @@ function WheelPicker<T extends WheelPickerValue>({
     scrollRef.current = scrollTo(boundedScroll);
     const selected = options[scrollRef.current];
     setValue(selected.value);
+    useHaptics();
   };
 
   const selectByValue = (value: T) => {
@@ -331,6 +332,8 @@ function WheelPicker<T extends WheelPickerValue>({
 
     cancelAnimation();
     selectByScroll(index);
+    // Also give haptic feedback when selection is set programmatically
+    useHaptics();
   };
 
   const scrollByStep = (step: number) => {

@@ -18,7 +18,7 @@ function RouteComponent() {
   const [selectedValue, setSelectedValue] = useState<number | undefined>();
 
   const handleClick = () => {
-    setEnabled(true);
+    // setEnabled(true);
   };
 
   const wheelPickerOptions = [
@@ -42,18 +42,14 @@ function RouteComponent() {
           {i18n.t('common:loadTodos')}
         </Button>
       </div>
+      <Input placeholder="Your password" type="text" />
+      <Input placeholder="Your password" type="password" />
       <DatePicker
         value={selectedDate}
         onValueChange={setSelectedDate}
         placeholder="Pick a date"
       />
-      <div>
-        <Input
-          placeholder="Type here..."
-          className="mt-4 mb-4"
-          type="password"
-        />
-      </div>
+      <div></div>
       {data && (
         <Drawer open={enabled} onOpenChange={setEnabled}>
           <DrawerContent>

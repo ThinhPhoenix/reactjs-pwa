@@ -1,5 +1,6 @@
 import { Calendar } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import { useHaptics } from '../../hooks/common/use-haptics';
 import { Button } from '../button';
 import { Drawer, DrawerContent } from '../drawer';
 import { Input } from '../input';
@@ -69,9 +70,10 @@ export default function DatePicker({
 
   return (
     <>
-      <div className="relative">
+      <div className="relative" onClick={() => useHaptics()}>
         <Input
           readOnly
+          onPointerDown={() => useHaptics()}
           onFocus={() => setOpen(true)}
           onClick={() => setOpen(true)}
           value={value ? value.toLocaleDateString('en-US') : ''}

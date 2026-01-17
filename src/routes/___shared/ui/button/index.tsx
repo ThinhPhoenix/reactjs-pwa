@@ -3,11 +3,13 @@ import { cva, type VariantProps } from 'class-variance-authority';
 import * as React from 'react';
 
 import { cn } from '@/helpers/utils';
-import { useHaptics } from '../../hooks/common/use-haptics';
+
 import { Spinner } from '../spinner';
+import './button.css';
+import { useHaptics } from '../../hooks/common/use-haptics';
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive",
+  "relative overflow-hidden inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive",
   {
     variants: {
       variant: {
@@ -53,6 +55,36 @@ function Button({
   }) {
   const Comp = asChild ? Slot : 'button';
   const { children, ...restProps } = props;
+  const rippleRef = React.useRef<HTMLSpanElement | null>(null);
+
+  const createRipple = (e: React.MouseEvent<HTMLElement>) => {
+    const btn = e.currentTarget as HTMLElement;
+    const ripple = rippleRef.current;
+    if (!ripple || !btn) return;
+    const rect = btn.getBoundingClientRect();
+    const size = Math.max(rect.width, rect.height) * 2;
+    ripple.style.width = ripple.style.height = `${size}px`;
+    const left = e.clientX - rect.left - size / 2;
+    const top = e.clientY - rect.top - size / 2;
+    ripple.style.left = `${left}px`;
+    ripple.style.top = `${top}px`;
+    ripple.style.opacity = '0.3';
+    ripple.style.transform = 'scale(0)';
+    ripple.classList.remove('ripple-effect');
+    // force reflow
+    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+    ripple.offsetHeight;
+    ripple.classList.add('ripple-effect');
+
+    const clear = () => {
+      ripple.classList.remove('ripple-effect');
+      ripple.style.opacity = '';
+      ripple.style.transform = '';
+      ripple.removeEventListener('animationend', clear);
+    };
+
+    ripple.addEventListener('animationend', clear);
+  };
 
   return (
     <Comp
@@ -61,6 +93,7 @@ function Button({
       data-size={size}
       className={cn(buttonVariants({ variant, size, className }))}
       disabled={isLoading || restProps.disabled}
+      onMouseDown={createRipple}
       onClick={(event) => {
         onClick?.(event as unknown as React.MouseEvent<HTMLButtonElement>);
         useHaptics();
@@ -69,6 +102,11 @@ function Button({
     >
       {isLoading && <Spinner />}
       {children}
+      <span
+        ref={rippleRef}
+        id="ripple"
+        className="absolute rounded-full bg-white/30 opacity-0 transform scale-0 pointer-events-none"
+      />
     </Comp>
   );
 }
