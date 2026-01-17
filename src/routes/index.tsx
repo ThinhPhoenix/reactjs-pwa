@@ -1,9 +1,9 @@
 import i18n from '@/helpers/i18n';
 import { createFileRoute } from '@tanstack/react-router';
 import { useState } from 'react';
-import { useHaptics } from './___shared/hooks/common/use-haptics';
 import { useListTodos } from './___shared/hooks/todo/use-list-todos';
 import { Button } from './___shared/ui/button';
+import DatePicker from './___shared/ui/date-picker';
 import { Drawer, DrawerContent } from './___shared/ui/drawer';
 import { Input } from './___shared/ui/input';
 import { WheelPicker, WheelPickerWrapper } from './___shared/ui/wheel-picker';
@@ -19,7 +19,6 @@ function RouteComponent() {
 
   const handleClick = () => {
     setEnabled(true);
-    useHaptics();
   };
 
   const wheelPickerOptions = [
@@ -35,6 +34,7 @@ function RouteComponent() {
     { value: 10, label: 'Ten' },
   ];
 
+  const [selectedDate, setSelectedDate] = useState<Date>();
   return (
     <div className="p-4">
       <div className="flex gap-2">
@@ -42,8 +42,17 @@ function RouteComponent() {
           {i18n.t('common:loadTodos')}
         </Button>
       </div>
+      <DatePicker
+        value={selectedDate}
+        onValueChange={setSelectedDate}
+        placeholder="Pick a date"
+      />
       <div>
-        <Input placeholder="Type here..." className="mt-4 mb-4" />
+        <Input
+          placeholder="Type here..."
+          className="mt-4 mb-4"
+          type="password"
+        />
       </div>
       {data && (
         <Drawer open={enabled} onOpenChange={setEnabled}>
@@ -60,12 +69,14 @@ function RouteComponent() {
                   options={wheelPickerOptions}
                   value={selectedValue}
                   onValueChange={setSelectedValue}
+                  infinite
+                  visibleCount={13}
                 ></WheelPicker>
               </WheelPickerWrapper>
             </div>
           </DrawerContent>
         </Drawer>
-      )} 
+      )}
     </div>
   );
 }
