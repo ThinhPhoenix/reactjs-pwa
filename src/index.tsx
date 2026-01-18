@@ -2,7 +2,6 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ThemeProvider } from 'next-themes';
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import { Toaster } from 'sonner';
 import App from '@/app';
 
 const queryClient = new QueryClient();
@@ -14,8 +13,7 @@ if (rootEl) {
     <React.StrictMode>
       <QueryClientProvider client={queryClient}>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-          <Toaster position="top-center" />
-          <App />
+            <App />
         </ThemeProvider>
       </QueryClientProvider>
     </React.StrictMode>,

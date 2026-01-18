@@ -1,6 +1,6 @@
-import pkg from '@/../package.json';
 import i18n from '@/helpers/i18n';
 import { createFileRoute } from '@tanstack/react-router';
+import { toast } from 'sonner';
 import { Button } from './___shared/ui/button';
 import DatePicker from './___shared/ui/date-picker';
 import DateRangePicker from './___shared/ui/date-range-picker';
@@ -21,7 +21,9 @@ function RouteComponent() {
     <div className="p-4 flex flex-col gap-4">
       <div className="flex justify-between items-center">
         <h1 className="text-2xl font-bold">UI Components</h1>
-        <ThemeToggle />
+        <div className="flex gap-2">
+          <ThemeToggle />
+        </div>
       </div>
       <h1>Buttons</h1>
       <div className="flex flex-wrap gap-2">
@@ -31,7 +33,12 @@ function RouteComponent() {
         <Button variant={'destructive'}>{i18n.t('common:loadTodos')}</Button>
         <Button variant={'ghost'}>{i18n.t('common:loadTodos')}</Button>
         <Button variant={'link'}>{i18n.t('common:loadTodos')}</Button>
-        <Button variant={'outline'}>{i18n.t('common:loadTodos')}</Button>
+        <Button
+          variant={'outline'}
+          onClick={() => toast.info('This is a success toast!')}
+        >
+          {i18n.t('common:loadTodos')}
+        </Button>
         <Button variant={'secondary'} isLoading>
           {i18n.t('common:loadTodos')}
         </Button>
@@ -47,9 +54,6 @@ function RouteComponent() {
         <TimeRangePicker />
         <Textarea />
         <Switch />
-      </div>
-      <div className="fixed bottom-0 left-0 w-full text-center mb-2">
-        <p>Version: {pkg.version}</p>
       </div>
     </div>
   );
