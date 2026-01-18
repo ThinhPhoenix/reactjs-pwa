@@ -1,8 +1,11 @@
 import { useEffect, useState } from 'react';
 import { useHaptics } from '../../hooks/common/use-haptics';
+import { usePlatform } from '../../hooks/common/use-platform';
 import { Button } from '../button';
+import { Calendar as CalendarComponent } from '../calendar';
 import { Drawer, DrawerContent } from '../drawer';
 import { Input } from '../input';
+import { Popover, PopoverContent, PopoverTrigger } from '../popover';
 import { WheelPicker, WheelPickerWrapper } from '../wheel-picker';
 
 interface DatePickerProps {
@@ -17,10 +20,13 @@ export default function DatePicker({
   placeholder = '',
 }: DatePickerProps) {
   const triggerHaptics = useHaptics();
+  const { platform, isTouchDevice } = usePlatform();
   const [open, setOpen] = useState(false);
   const [selectedYear, setSelectedYear] = useState<number>();
   const [selectedMonth, setSelectedMonth] = useState<number>();
   const [selectedDay, setSelectedDay] = useState<number>();
+
+  const isMobile = platform !== 'desktop' && isTouchDevice;
 
   useEffect(() => {
     if (value) {
@@ -100,82 +106,130 @@ export default function DatePicker({
 
   return (
     <>
-      <div className="relative" onClick={() => triggerHaptics()}>
-        <Input
-          readOnly
-          onPointerDown={() => triggerHaptics()}
-          onFocus={() => setOpen(true)}
-          onClick={() => setOpen(true)}
-          value={value ? value.toLocaleDateString('en-US') : ''}
-          placeholder={placeholder}
-          aria-haspopup="dialog"
-          aria-expanded={open}
-          className="pr-10 cursor-pointer"
-        />
-        {value && (
-          <button
-            type="button"
-            aria-label="Clear date"
-            title="Clear date"
-            onPointerDown={(e) => {
-              e.stopPropagation();
-              triggerHaptics();
-            }}
-            onTouchStart={(e) => {
-              e.stopPropagation();
-              triggerHaptics();
-            }}
-            onMouseDown={(e) => {
-              e.stopPropagation();
-              triggerHaptics();
-            }}
-            onClick={(e) => {
-              e.stopPropagation();
-              onValueChange?.(undefined);
-              setOpen(false);
-            }}
-            className="absolute right-8 top-1/2 -translate-y-1/2 flex items-center justify-center h-5 w-5 rounded-full bg-primary/50 text-primary-foreground"
-          >
-            <SmallX className="h-3 w-3" />
-          </button>
-        )}
-        <Calendar className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
-      </div>
-      <Drawer open={open} onOpenChange={setOpen}>
-        <DrawerContent>
-          <div className="p-4">
-            <WheelPickerWrapper>
-              <WheelPicker
-                options={yearOptions}
-                value={selectedYear}
-                onValueChange={setSelectedYear}
-                infinite
-                visibleCount={13}
-              />
-              <WheelPicker
-                options={monthOptions}
-                value={selectedMonth}
-                onValueChange={setSelectedMonth}
-                infinite
-                visibleCount={13}
-              />
-              <WheelPicker
-                options={dayOptions}
-                value={selectedDay}
-                onValueChange={setSelectedDay}
-                infinite
-                visibleCount={13}
-              />
-            </WheelPickerWrapper>
-            <div className="flex justify-end gap-2 mt-4">
-              <Button variant="outline" onClick={() => setOpen(false)}>
-                Cancel
-              </Button>
-              <Button onClick={handleConfirm}>Confirm</Button>
-            </div>
+      {isMobile ? (
+        <>
+          <div className="relative" onClick={() => triggerHaptics()}>
+            <Input
+              readOnly
+              onPointerDown={() => triggerHaptics()}
+              onFocus={() => setOpen(true)}
+              onClick={() => setOpen(true)}
+              value={value ? value.toLocaleDateString('en-US') : ''}
+              placeholder={placeholder}
+              aria-haspopup="dialog"
+              aria-expanded={open}
+              className="pr-10 cursor-pointer"
+            />
+            {value && (
+              <button
+                type="button"
+                aria-label="Clear date"
+                title="Clear date"
+                onPointerDown={(e) => {
+                  e.stopPropagation();
+                  triggerHaptics();
+                }}
+                onTouchStart={(e) => {
+                  e.stopPropagation();
+                  triggerHaptics();
+                }}
+                onMouseDown={(e) => {
+                  e.stopPropagation();
+                  triggerHaptics();
+                }}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onValueChange?.(undefined);
+                  setOpen(false);
+                }}
+                className="absolute right-8 top-1/2 -translate-y-1/2 flex items-center justify-center h-5 w-5 rounded-full bg-primary/50 text-primary-foreground"
+              >
+                <SmallX className="h-3 w-3" />
+              </button>
+            )}
+            <Calendar className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
           </div>
-        </DrawerContent>
-      </Drawer>
+          <Drawer open={open} onOpenChange={setOpen}>
+            <DrawerContent>
+              <div className="p-4">
+                <WheelPickerWrapper>
+                  <WheelPicker
+                    options={yearOptions}
+                    value={selectedYear}
+                    onValueChange={setSelectedYear}
+                    infinite
+                    visibleCount={13}
+                  />
+                  <WheelPicker
+                    options={monthOptions}
+                    value={selectedMonth}
+                    onValueChange={setSelectedMonth}
+                    infinite
+                    visibleCount={13}
+                  />
+                  <WheelPicker
+                    options={dayOptions}
+                    value={selectedDay}
+                    onValueChange={setSelectedDay}
+                    infinite
+                    visibleCount={13}
+                  />
+                </WheelPickerWrapper>
+                <div className="flex justify-end gap-2 mt-4">
+                  <Button variant="outline" onClick={() => setOpen(false)}>
+                    Cancel
+                  </Button>
+                  <Button onClick={handleConfirm}>Confirm</Button>
+                </div>
+              </div>
+            </DrawerContent>
+          </Drawer>
+        </>
+      ) : (
+        <Popover open={open} onOpenChange={setOpen}>
+          <PopoverTrigger asChild>
+            <div className="relative" onClick={() => triggerHaptics()}>
+              <Input
+                readOnly
+                onPointerDown={() => triggerHaptics()}
+                value={value ? value.toLocaleDateString('en-US') : ''}
+                placeholder={placeholder}
+                className="pr-10 cursor-pointer"
+              />
+              {value && (
+                <button
+                  type="button"
+                  aria-label="Clear date"
+                  title="Clear date"
+                  onPointerDown={(e) => {
+                    e.stopPropagation();
+                    triggerHaptics();
+                  }}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onValueChange?.(undefined);
+                  }}
+                  className="absolute right-8 top-1/2 -translate-y-1/2 flex items-center justify-center h-5 w-5 rounded-full bg-primary/50 text-primary-foreground"
+                >
+                  <SmallX className="h-3 w-3" />
+                </button>
+              )}
+              <Calendar className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+            </div>
+          </PopoverTrigger>
+          <PopoverContent align="end">
+            <CalendarComponent
+              mode="single"
+              selected={value}
+              onSelect={(date) => {
+                onValueChange?.(date);
+                setOpen(false);
+              }}
+              initialFocus
+            />
+          </PopoverContent>
+        </Popover>
+      )}
     </>
   );
 }
