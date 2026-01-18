@@ -5,19 +5,6 @@ import ReactDOM from 'react-dom/client';
 import { Toaster } from 'sonner';
 import App from '@/app';
 
-if ('serviceWorker' in navigator && import.meta.env.PROD) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker
-      .register('/service-worker.js')
-      .then((registration) => {
-        console.log('SW registered: ', registration);
-      })
-      .catch((registrationError) => {
-        console.log('SW registration failed: ', registrationError);
-      });
-  });
-}
-
 const queryClient = new QueryClient();
 
 const rootEl = document.getElementById('root');
