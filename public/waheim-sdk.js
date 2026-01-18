@@ -123,6 +123,354 @@
       return 'data:image/svg+xml;base64,' + btoa(svgIcon);
     },
 
+    // Get device language and translate text
+    translateText: (key, fallbackText) => {
+      const deviceLang = navigator.language || navigator.userLanguage || 'en';
+
+      // Translation map for comprehensive language support
+      const translations = {
+        en: {
+          clickOnBrowser: 'Click',
+          shareIcon: 'on menu of browser',
+          scrollAndSelect: 'Scroll and select',
+          addToHomeScreen: 'Add to Home Screen',
+          openApp: 'Open app',
+          fromHomeScreen: 'from your home screen',
+        },
+        es: {
+          clickOnBrowser: 'Haz clic',
+          shareIcon: 'en el menú del navegador',
+          scrollAndSelect: 'Desplázate y selecciona',
+          addToHomeScreen: 'Añadir a pantalla de inicio',
+          openApp: 'Abrir app',
+          fromHomeScreen: 'desde tu pantalla de inicio',
+        },
+        fr: {
+          clickOnBrowser: 'Cliquez',
+          shareIcon: 'sur le menu du navigateur',
+          scrollAndSelect: 'Faites défiler et sélectionnez',
+          addToHomeScreen: "Ajouter à l'écran d'accueil",
+          openApp: "Ouvrir l'app",
+          fromHomeScreen: "depuis votre écran d'accueil",
+        },
+        de: {
+          clickOnBrowser: 'Klicken',
+          shareIcon: 'im Browser-Menü',
+          scrollAndSelect: 'Scrollen und auswählen',
+          addToHomeScreen: 'Zum Startbildschirm hinzufügen',
+          openApp: 'App öffnen',
+          fromHomeScreen: 'vom Startbildschirm aus',
+        },
+        it: {
+          clickOnBrowser: 'Clicca',
+          shareIcon: 'sul menu del browser',
+          scrollAndSelect: 'Scorri e seleziona',
+          addToHomeScreen: 'Aggiungi alla schermata principale',
+          openApp: 'Apri app',
+          fromHomeScreen: 'dalla tua schermata principale',
+        },
+        pt: {
+          clickOnBrowser: 'Clique',
+          shareIcon: 'no menu do navegador',
+          scrollAndSelect: 'Role e selecione',
+          addToHomeScreen: 'Adicionar à tela inicial',
+          openApp: 'Abrir app',
+          fromHomeScreen: 'da sua tela inicial',
+        },
+        ja: {
+          clickOnBrowser: 'クリック',
+          shareIcon: 'ブラウザのメニューで',
+          scrollAndSelect: 'スクロールして選択',
+          addToHomeScreen: 'ホーム画面に追加',
+          openApp: 'アプリを開く',
+          fromHomeScreen: 'ホーム画面から',
+        },
+        ko: {
+          clickOnBrowser: '클릭',
+          shareIcon: '브라우저 메뉴에서',
+          scrollAndSelect: '스크롤하여 선택',
+          addToHomeScreen: '홈 화면에 추가',
+          openApp: '앱 열기',
+          fromHomeScreen: '홈 화면에서',
+        },
+        zh: {
+          clickOnBrowser: '点击',
+          shareIcon: '在浏览器菜单中',
+          scrollAndSelect: '滚动并选择',
+          addToHomeScreen: '添加到主屏幕',
+          openApp: '打开应用',
+          fromHomeScreen: '从主屏幕',
+        },
+        ru: {
+          clickOnBrowser: 'Нажмите',
+          shareIcon: 'в меню браузера',
+          scrollAndSelect: 'Прокрутите и выберите',
+          addToHomeScreen: 'Добавить на главный экран',
+          openApp: 'Открыть приложение',
+          fromHomeScreen: 'с главного экрана',
+        },
+        ar: {
+          clickOnBrowser: 'انقر',
+          shareIcon: 'في قائمة المتصفح',
+          scrollAndSelect: 'قم بالتمرير وحدد',
+          addToHomeScreen: 'إضافة إلى الشاشة الرئيسية',
+          openApp: 'فتح التطبيق',
+          fromHomeScreen: 'من الشاشة الرئيسية',
+        },
+        vi: {
+          clickOnBrowser: 'Nhấn vào',
+          shareIcon: 'trên menu của trình duyệt',
+          scrollAndSelect: 'Cuộn và chọn',
+          addToHomeScreen: 'Thêm vào Màn hình chính',
+          openApp: 'Mở ứng dụng',
+          fromHomeScreen: 'từ Màn hình chính của bạn',
+        },
+        hi: {
+          clickOnBrowser: 'क्लिक करें',
+          shareIcon: 'ब्राउज़र मेनू पर',
+          scrollAndSelect: 'स्क्रॉल करें और चुनें',
+          addToHomeScreen: 'होम स्क्रीन पर जोड़ें',
+          openApp: 'ऐप खोलें',
+          fromHomeScreen: 'अपनी होम स्क्रीन से',
+        },
+        th: {
+          clickOnBrowser: 'คลิก',
+          shareIcon: 'บนเมนูของเบราว์เซอร์',
+          scrollAndSelect: 'เลื่อนและเลือก',
+          addToHomeScreen: 'เพิ่มลงหน้าจอหลัก',
+          openApp: 'เปิดแอป',
+          fromHomeScreen: 'จากหน้าจอหลักของคุณ',
+        },
+        id: {
+          clickOnBrowser: 'Klik',
+          shareIcon: 'pada menu browser',
+          scrollAndSelect: 'Gulir dan pilih',
+          addToHomeScreen: 'Tambahkan ke Layar Utama',
+          openApp: 'Buka aplikasi',
+          fromHomeScreen: 'dari layar utama Anda',
+        },
+        ms: {
+          clickOnBrowser: 'Klik',
+          shareIcon: 'pada menu pelayar',
+          scrollAndSelect: 'Skrol dan pilih',
+          addToHomeScreen: 'Tambah ke Skrin Utama',
+          openApp: 'Buka aplikasi',
+          fromHomeScreen: 'dari skrin utama anda',
+        },
+        tr: {
+          clickOnBrowser: 'Tıklayın',
+          shareIcon: 'tarayıcı menüsünde',
+          scrollAndSelect: 'Kaydırın ve seçin',
+          addToHomeScreen: 'Ana Ekrana Ekle',
+          openApp: 'Uygulamayı aç',
+          fromHomeScreen: 'ana ekranınızdan',
+        },
+        pl: {
+          clickOnBrowser: 'Kliknij',
+          shareIcon: 'w menu przeglądarki',
+          scrollAndSelect: 'Przewiń i wybierz',
+          addToHomeScreen: 'Dodaj do ekranu głównego',
+          openApp: 'Otwórz aplikację',
+          fromHomeScreen: 'ze swojego ekranu głównego',
+        },
+        nl: {
+          clickOnBrowser: 'Klik',
+          shareIcon: 'in het browsermenu',
+          scrollAndSelect: 'Scroll en selecteer',
+          addToHomeScreen: 'Toevoegen aan startscherm',
+          openApp: 'App openen',
+          fromHomeScreen: 'vanaf je startscherm',
+        },
+        sv: {
+          clickOnBrowser: 'Klicka',
+          shareIcon: 'i webbläsarmenyn',
+          scrollAndSelect: 'Bläddra och välj',
+          addToHomeScreen: 'Lägg till på hemskärmen',
+          openApp: 'Öppna app',
+          fromHomeScreen: 'från din hemskärm',
+        },
+        da: {
+          clickOnBrowser: 'Klik',
+          shareIcon: 'i browsermenuen',
+          scrollAndSelect: 'Rul og vælg',
+          addToHomeScreen: 'Tilføj til startskærm',
+          openApp: 'Åbn app',
+          fromHomeScreen: 'fra din startskærm',
+        },
+        no: {
+          clickOnBrowser: 'Klikk',
+          shareIcon: 'i nettlesermenyen',
+          scrollAndSelect: 'Rull og velg',
+          addToHomeScreen: 'Legg til på startskjerm',
+          openApp: 'Åpne app',
+          fromHomeScreen: 'fra startskjermen din',
+        },
+        fi: {
+          clickOnBrowser: 'Napsauta',
+          shareIcon: 'selainvalikossa',
+          scrollAndSelect: 'Vieritä ja valitse',
+          addToHomeScreen: 'Lisää aloitusnäytölle',
+          openApp: 'Avaa sovellus',
+          fromHomeScreen: 'aloitusnäytöltäsi',
+        },
+        he: {
+          clickOnBrowser: 'לחץ',
+          shareIcon: 'בתפריט הדפדפן',
+          scrollAndSelect: 'גלול ובחר',
+          addToHomeScreen: 'הוסף למסך הבית',
+          openApp: 'פתח אפליקציה',
+          fromHomeScreen: 'ממסך הבית שלך',
+        },
+        fa: {
+          clickOnBrowser: 'کلیک کنید',
+          shareIcon: 'در منوی مرورگر',
+          scrollAndSelect: 'اسکرول و انتخاب کنید',
+          addToHomeScreen: 'افزودن به صفحه اصلی',
+          openApp: 'باز کردن برنامه',
+          fromHomeScreen: 'از صفحه اصلی شما',
+        },
+        ur: {
+          clickOnBrowser: 'کلک کریں',
+          shareIcon: 'براؤزر مینو میں',
+          scrollAndSelect: 'اسکرول کریں اور منتخب کریں',
+          addToHomeScreen: 'ہوم اسکرین پر شامل کریں',
+          openApp: 'ایپ کھولیں',
+          fromHomeScreen: 'آپ کی ہوم اسکرین سے',
+        },
+        bn: {
+          clickOnBrowser: 'ক্লিক করুন',
+          shareIcon: 'ব্রাউজার মেনুতে',
+          scrollAndSelect: 'স্ক্রোল করুন এবং নির্বাচন করুন',
+          addToHomeScreen: 'হোম স্ক্রিনে যোগ করুন',
+          openApp: 'অ্যাপ খুলুন',
+          fromHomeScreen: 'আপনার হোম স্ক্রিন থেকে',
+        },
+        ta: {
+          clickOnBrowser: 'சொடுக்கவும்',
+          shareIcon: 'உலாவி மெனுவில்',
+          scrollAndSelect: 'உருட்டி தேர்ந்தெடுக்கவும்',
+          addToHomeScreen: 'முகப்புத்திரையில் சேர்க்கவும்',
+          openApp: 'ஆப் திறக்கவும்',
+          fromHomeScreen: 'உங்கள் முகப்புத்திரையில் இருந்து',
+        },
+        te: {
+          clickOnBrowser: 'క్లిక్ చేయండి',
+          shareIcon: 'బ్రౌజర్ మెనులో',
+          scrollAndSelect: 'స్క్రోల్ చేసి ఎంచుకోండి',
+          addToHomeScreen: 'హోమ్ స్క్రీన్‌కి జోడించండి',
+          openApp: 'యాప్ తెరవండి',
+          fromHomeScreen: 'మీ హోమ్ స్క్రీన్ నుండి',
+        },
+        mr: {
+          clickOnBrowser: 'क्लिक करा',
+          shareIcon: 'ब्राउझर मेनूमध्ये',
+          scrollAndSelect: 'स्क्रोल करून निवडा',
+          addToHomeScreen: 'होम स्क्रीनवर जोडा',
+          openApp: 'अॅप उघडा',
+          fromHomeScreen: 'तुमच्या होम स्क्रीनवरून',
+        },
+        gu: {
+          clickOnBrowser: 'ક્લિક કરો',
+          shareIcon: 'બ્રાઉઝર મેનુમાં',
+          scrollAndSelect: 'સ્ક્રોલ કરો અને પસંદ કરો',
+          addToHomeScreen: 'હોમ સ્ક્રીન પર ઉમેરો',
+          openApp: 'એપ ખોલો',
+          fromHomeScreen: 'તમારા હોમ સ્ક્રીન પરથી',
+        },
+        pa: {
+          clickOnBrowser: 'ਕਲਿੱਕ ਕਰੋ',
+          shareIcon: 'ਬਰਾਊਜ਼ਰ ਮੀਨੂ ਵਿੱਚ',
+          scrollAndSelect: 'ਸਕ੍ਰੋਲ ਕਰੋ ਅਤੇ ਚੁਣੋ',
+          addToHomeScreen: 'ਹੋਮ ਸਕ੍ਰੀਨ ਤੇ ਸ਼ਾਮਲ ਕਰੋ',
+          openApp: 'ਐਪ ਖੋਲ੍ਹੋ',
+          fromHomeScreen: 'ਤੁਹਾਡੀ ਹੋਮ ਸਕ੍ਰੀਨ ਤੋਂ',
+        },
+        kn: {
+          clickOnBrowser: 'ಕ್ಲಿಕ್ ಮಾಡಿ',
+          shareIcon: 'ಬ್ರೌಸರ್ ಮೆನುವಿನಲ್ಲಿ',
+          scrollAndSelect: 'ಸ್ಕ್ರೋಲ್ ಮಾಡಿ ಆಯ್ಕೆಮಾಡಿ',
+          addToHomeScreen: 'ಹೋಮ್ ಸ್ಕ್ರೀನ್‌ಗೆ ಸೇರಿಸಿ',
+          openApp: 'ಅಪ್ ತೆರೆಯಿರಿ',
+          fromHomeScreen: 'ನಿಮ್ಮ ಹೋಮ್ ಸ್ಕ್ರೀನ್‌ನಿಂದ',
+        },
+        ml: {
+          clickOnBrowser: 'ക്ലിക്ക് ചെയ്യുക',
+          shareIcon: 'ബ്രൗസർ മെനുവിൽ',
+          scrollAndSelect: 'സ്ക്രോൾ ചെയ്ത് തിരഞ്ഞെടുക്കുക',
+          addToHomeScreen: 'ഹോം സ്ക്രീനിൽ ചേർക്കുക',
+          openApp: 'ആപ്പ് തുറക്കുക',
+          fromHomeScreen: 'നിങ്ങളുടെ ഹോം സ്ക്രീനിൽ നിന്ന്',
+        },
+        si: {
+          clickOnBrowser: 'එබ්බන්න',
+          shareIcon: 'බ්රව්සර් මෙනුවේ',
+          scrollAndSelect: 'ස්ක්රෝල් කර තෝරන්න',
+          addToHomeScreen: 'මුල් තිරයට එකතු කරන්න',
+          openApp: 'යෙදුම විවෘත කරන්න',
+          fromHomeScreen: 'ඔබගේ මුල් තිරයෙන්',
+        },
+        my: {
+          clickOnBrowser: 'နှိပ်ပါ',
+          shareIcon: 'ဘရောက်ဇာမီနူးတွင်',
+          scrollAndSelect: 'စက្ឱးော့လုပ်ပြီးရွေးချယ်ပါ',
+          addToHomeScreen: 'ပင်မစာမျက်နှာသို့ထည့်ပါ',
+          openApp: 'အက်ပ်ဖွင့်ပါ',
+          fromHomeScreen: 'သင့်ပင်မစာမျက်နှာမှ',
+        },
+        km: {
+          clickOnBrowser: 'ចុច',
+          shareIcon: 'នៅក្នុងម៉ឺនុយកម្មវិធីរុករក',
+          scrollAndSelect: 'រមូរហើយជ្រើសរើស',
+          addToHomeScreen: 'បន្ថែមទៅអេក្រង់ដើម',
+          openApp: 'បើកកម្មវិធី',
+          fromHomeScreen: 'ពីអេក្រង់ដើមរបស់អ្នក',
+        },
+        lo: {
+          clickOnBrowser: 'ກົດ',
+          shareIcon: 'ໃນເມນູບຣາວເຊີ',
+          scrollAndSelect: 'ເລື່ອນ ແລະ ເລືອກ',
+          addToHomeScreen: 'ເພີ່ມໃສ່ໜ້າຈໍຫຼັກ',
+          openApp: 'ເປີດແອັບ',
+          fromHomeScreen: 'ຈາກໜ້າຈໍຫຼັກຂອງທ່ານ',
+        },
+        ne: {
+          clickOnBrowser: 'क्लिक गर्नुहोस्',
+          shareIcon: 'ब्राउजर मेनुमा',
+          scrollAndSelect: 'स्क्रोल गर्नुहोस् र छनोट गर्नुहोस्',
+          addToHomeScreen: 'होम स्क्रिनमा थप्नुहोस्',
+          openApp: 'एप खोल्नुहोस्',
+          fromHomeScreen: 'तपाईंको होम स्क्रिनबाट',
+        },
+        as: {
+          clickOnBrowser: 'ক্লিক কৰক',
+          shareIcon: 'ব্ৰাউজাৰ মেনুত',
+          scrollAndSelect: 'স্ক্ৰল কৰক আৰু নিৰ্বাচন কৰক',
+          addToHomeScreen: 'হোম স্ক্ৰীণলৈ যোগ কৰক',
+          openApp: 'এপ খোলক',
+          fromHomeScreen: 'আপোনাৰ হোম স্ক্ৰীণৰ পৰা',
+        },
+        or: {
+          clickOnBrowser: 'କ୍ଲିକ କରନ୍ତୁ',
+          shareIcon: 'ବ୍ରାଉଜର ମେନୁରେ',
+          scrollAndSelect: 'ସ୍କ୍ରୋଲ କରନ୍ତୁ ଏବଂ ଚୟନ କରନ୍ତୁ',
+          addToHomeScreen: 'ହୋମ ସ୍କ୍ରିନରେ ଯୋଡନ୍ତୁ',
+          openApp: 'ଆପ୍ ଖୋଲନ୍ତୁ',
+          fromHomeScreen: 'ଆପଣଙ୍କ ହୋମ ସ୍କ୍ରିନରୁ',
+        },
+      };
+
+      // Get language code (first 2 characters)
+      const langCode = deviceLang.substring(0, 2);
+
+      // Return translation if available, otherwise fallback to English
+      if (translations[langCode] && translations[langCode][key]) {
+        return translations[langCode][key];
+      }
+
+      // Fallback to English or provided fallback
+      return fallbackText || translations['en'][key] || fallbackText;
+    },
+
     // Generate unique ID
     generateId: (prefix) =>
       prefix + '_' + Math.random().toString(36).substr(2, 9),
@@ -288,11 +636,11 @@
                     color: ${colors.foreground};
                     font-size: 14px;
                     line-height: 1.5;
-                  ">Click 
+                  ">${utils.translateText('clickOnBrowser', 'Click')} 
                     <svg width="18" height="18" viewBox="0 0 256 256" style="display: inline-block; vertical-align: middle; margin: 0 2px; fill: #007AFF;">
                       <path d="M216,112v96a16,16,0,0,1-16,16H56a16,16,0,0,1-16-16V112A16,16,0,0,1,56,96H80a8,8,0,0,1,0,16H56v96H200V112H176a8,8,0,0,1,0-16h24A16,16,0,0,1,216,112ZM93.66,69.66,120,43.31V136a8,8,0,0,0,16,0V43.31l26.34,26.35a8,8,0,0,0,11.32-11.32l-40-40a8,8,0,0,0-11.32,0l-40,40A8,8,0,0,0,93.66,69.66Z"></path>
                     </svg> 
-                    on menu of browser
+                    ${utils.translateText('shareIcon', 'on menu of browser')}
                   </span>
                 </div>
               </div>
@@ -318,7 +666,7 @@
                     color: ${colors.foreground};
                     font-size: 14px;
                     line-height: 1.5;
-                  ">Scroll and select 
+                  ">${utils.translateText('scrollAndSelect', 'Scroll and select')} 
                     <code style="
                       background: ${colors.muted};
                       color: ${colors.foreground};
@@ -331,10 +679,10 @@
                       vertical-align: middle;
                       margin: 0 2px;
                     ">
-                      <svg width="14" height="14" viewBox="0 0 256 256" style="margin-right: 4px; fill: #007AFF;">
+                      <svg width="14" height="14" viewBox="0 0 256 256" style="margin-right: 4px; fill: ${colors.foreground};">
                         <path d="M208,32H48A16,16,0,0,0,32,48V208a16,16,0,0,0,16,16H208a16,16,0,0,0,16-16V48A16,16,0,0,0,208,32Zm0,176H48V48H208V208Zm-32-80a8,8,0,0,1-8,8H136v32a8,8,0,0,1-16,0V136H88a8,8,0,0,1,0-16h32V88a8,8,0,0,1,16,0v32h32A8,8,0,0,1,176,128Z"></path>
                       </svg>
-                      Add to Home Screen
+                      ${utils.translateText('addToHomeScreen', 'Add to Home Screen')}
                     </code>
                   </span>
                 </div>
@@ -361,7 +709,7 @@
                     color: ${colors.foreground};
                     font-size: 14px;
                     line-height: 1.5;
-                  ">Open app 
+                  ">${utils.translateText('openApp', 'Open app')} 
                     <img src="${appIcon}" alt="${appName}" style="
                       width: 16px;
                       height: 16px;
@@ -371,8 +719,8 @@
                       margin: 0 2px;
                       background: ${colors.muted};
                       border: 1px solid ${colors.border};
-                    " onerror="this.onerror=null; this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIHZpZXdCb3g9IjAgMCAxNiAxNiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8cmVjdCB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIHJ4PSI0IiBmaWxsPSIjNjFkYWZiIi8+CiAgPHBhdGggZD0iTTggNEM2LjY3IDQgNS42NyA0LjY3IDUuMzMgNi41QzUgOC4zMyA1IDkuMzMgNSAxME44SDYuNjdDNi42NyA5LjMzIDYuNjcgOC4zMyA2LjY3IDYuNUM3IDQuNjcgNy4zMyA0IDggNFY0WiIgZmlsbD0id2hpdGUiLz4KICA8Y2lyY2xlIGN4PSI4IiBjeT0iOCIgcj0iMyIgZmlsbD0id2hpdGUiLz4KICA8Y2lyY2xlIGN4PSI4IiBjeT0iOCIgcj0iMS41IiBmaWxsPSIjNjFkYWZiIi8+Cjwvc3ZnPg==';">
-                    from your home screen
+                    " onerror="this.onerror=null; this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIHZpZXdCb3g9IjAgMCAxNiAxNiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8cmVjdCB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIHJ4PSI0IiBmaWxsPSIjNjFkYWZiIi8+CiAgPHBhdGggZD0iTTggNEM2LjY3IDQgNS42NyA0LjY3IDUuMzMgNi41QzUgOC4zMyA1IDkuMzMgNSAxMC44SDYuNjdDNi42NyA5LjMzIDYuNjcgOC4zMyA2LjY3IDYuNUM3IDQuNjcgNy4zMyA0IDggNFY0WiIgZmlsbD0id2hpdGUiLz4KICA8Y2lyY2xlIGN4PSI4IiBjeT0iOCIgcj0iMyIgZmlsbD0id2hpdGUiLz4KICA8Y2lyY2xlIGN4PSI4IiBjeT0iOCIgcj0iMS41IiBmaWxsPSIjNjFkYWZiIi8+Cjwvc3ZnPg==';">
+                    ${utils.translateText('fromHomeScreen', 'from your home screen')}
                   </span>
                 </div>
               </div>
