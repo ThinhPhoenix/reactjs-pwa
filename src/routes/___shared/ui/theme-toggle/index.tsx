@@ -1,12 +1,12 @@
-'use client';
-
 import { useTheme } from 'next-themes';
 import { useEffect, useState } from 'react';
+import { useHaptics } from '../../hooks/common/use-haptics';
 import './theme-toggle.css';
 
 export default function ThemeToggle() {
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
+  const triggerHaptics = useHaptics();
 
   useEffect(() => {
     setMounted(true);
@@ -16,13 +16,16 @@ export default function ThemeToggle() {
     return null;
   }
 
-  const isDark = theme === 'dark';
+  const isLight = theme === 'light';
 
   return (
     <label className="switch">
       <input
-        checked={isDark}
-        onChange={() => setTheme(isDark ? 'light' : 'dark')}
+        checked={isLight}
+        onChange={() => {
+          setTheme(isLight ? 'dark' : 'light');
+          triggerHaptics();
+        }}
         type="checkbox"
         aria-label="Toggle dark mode"
       />

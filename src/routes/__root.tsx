@@ -11,7 +11,6 @@ function RootComponent() {
       attribute="class"
       defaultTheme="system"
       enableSystem
-      disableTransitionOnChange
     >
       <Outlet />
     </ThemeProvider>
