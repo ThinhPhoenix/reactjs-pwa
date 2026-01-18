@@ -8,11 +8,38 @@
   // Utility functions
   const utils = {
     // Check if app is in standalone mode
-    isStandalone: () =>
-      window.matchMedia('(display-mode: standalone)').matches ||
-      window.navigator.standalone === true ||
-      (window.navigator.userAgent &&
-        window.navigator.userAgent.includes('wv')) === false,
+    isStandalone: () => {
+      // Multiple detection methods for PWA standalone mode
+      const displayModeStandalone = window.matchMedia(
+        '(display-mode: standalone)',
+      ).matches;
+      const displayModeFullscreen = window.matchMedia(
+        '(display-mode: fullscreen)',
+      ).matches;
+      const displayModeMinimalUI = window.matchMedia(
+        '(display-mode: minimal-ui)',
+      ).matches;
+      const iosStandalone = window.navigator.standalone === true;
+
+      // Check for PWA manifest features that indicate standalone mode
+      const hasStandaloneFeatures =
+        window.matchMedia('(display-mode: standalone)').matches ||
+        window.matchMedia('(display-mode: fullscreen)').matches ||
+        window.matchMedia('(display-mode: minimal-ui)').matches ||
+        window.navigator.standalone === true ||
+        // Additional check: if the app was launched from home screen
+        (window.performance &&
+          window.performance.getEntriesByType('navigation')[0]?.type ===
+            'navigate') ||
+        // Check if running as PWA (no browser UI visible)
+        window.location.search.includes('source=pwa') ||
+        // Check for service worker control in standalone context
+        (navigator.serviceWorker &&
+          navigator.serviceWorker.controller &&
+          !window.matchMedia('(display-mode: browser)').matches);
+
+      return hasStandaloneFeatures;
+    },
 
     // Check if running on mobile
     isMobile: () =>
@@ -892,6 +919,47 @@
         ...options,
       };
 
+      // Multiple PWA detection methods to prevent drawer when app is installed
+      const isStandaloneMode = utils.isStandalone();
+      const isStandaloneDisplayMode = window.matchMedia(
+        '(display-mode: standalone)',
+      ).matches;
+      const isFullscreenDisplayMode = window.matchMedia(
+        '(display-mode: fullscreen)',
+      ).matches;
+      const isMinimalUIDisplayMode = window.matchMedia(
+        '(display-mode: minimal-ui)',
+      ).matches;
+      const isIOSStandalone = window.navigator.standalone === true;
+      const hasPWAFeatures =
+        window.matchMedia('(display-mode: standalone)').matches ||
+        window.matchMedia('(display-mode: fullscreen)').matches ||
+        window.matchMedia('(display-mode: minimal-ui)').matches;
+
+      const isAlreadyInstalled =
+        isStandaloneMode ||
+        isStandaloneDisplayMode ||
+        isFullscreenDisplayMode ||
+        isMinimalUIDisplayMode ||
+        isIOSStandalone ||
+        hasPWAFeatures;
+
+      console.log('[Waheim SDK] PWA Detection Results:');
+      console.log('  - isStandalone():', isStandaloneMode);
+      console.log('  - display-mode standalone:', isStandaloneDisplayMode);
+      console.log('  - display-mode fullscreen:', isFullscreenDisplayMode);
+      console.log('  - display-mode minimal-ui:', isMinimalUIDisplayMode);
+      console.log('  - iOS standalone:', isIOSStandalone);
+      console.log('  - hasPWAFeatures:', hasPWAFeatures);
+      console.log('  - Final decision - skip init:', isAlreadyInstalled);
+
+      if (isAlreadyInstalled) {
+        console.log(
+          '[Waheim SDK] App already installed/PWA mode - skipping initialization',
+        );
+        return this;
+      }
+
       // Check if should show drawer
       if (config.autoShow && this.shouldShowDrawer(config)) {
         setTimeout(async () => {
@@ -911,14 +979,34 @@
     // Check if should show drawer
     shouldShowDrawer: (config) => {
       console.log('[Waheim SDK] shouldShowDrawer check:');
-      console.log('  - Standalone mode:', utils.isStandalone());
+
+      // Detailed standalone mode debugging
+      const isStandaloneMode = utils.isStandalone();
+      const displayModeMatch = window.matchMedia(
+        '(display-mode: standalone)',
+      ).matches;
+      const fullscreenModeMatch = window.matchMedia(
+        '(display-mode: fullscreen)',
+      ).matches;
+      const iosStandalone = window.navigator.standalone === true;
+      const userAgent = window.navigator.userAgent;
+      const hasWebView =
+        userAgent &&
+        (userAgent.includes('wv') || userAgent.includes('WebView'));
+
+      console.log('  - Standalone mode:', isStandaloneMode);
+      console.log('  - Display mode standalone:', displayModeMatch);
+      console.log('  - Display mode fullscreen:', fullscreenModeMatch);
+      console.log('  - iOS standalone:', iosStandalone);
+      console.log('  - User Agent:', userAgent);
+      console.log('  - Has WebView:', hasWebView);
       console.log('  - Mobile:', utils.isMobile());
       console.log('  - Dark mode:', utils.isDarkMode());
       console.log('  - Mobile only:', config.mobileOnly);
       console.log('  - Show once:', config.showOnce);
 
       // Don't show if in standalone mode
-      if (utils.isStandalone()) {
+      if (isStandaloneMode) {
         console.log('  - ❌ Blocked: Running in standalone mode');
         return false;
       }
@@ -944,6 +1032,14 @@
 
     // Show drawer
     showDrawer: async function (options = {}) {
+      // Final failsafe check - don't show if in any PWA mode
+      if (utils.isStandalone()) {
+        console.log(
+          '[Waheim SDK] Final check: Standalone mode detected - aborting drawer show',
+        );
+        return this;
+      }
+
       const drawerOptions = {
         title: 'Install This App',
         description:
@@ -992,8 +1088,16 @@
   window.WaheimSDK = WaheimSDK;
   window.waheimSDK = WaheimSDK;
 
-  // Auto-initialize by default
-  document.addEventListener('DOMContentLoaded', () => {
+  // Initialize function with standalone check
+  const initializeSDK = () => {
+    // Check if app is already in standalone mode
+    if (utils.isStandalone()) {
+      console.log(
+        '[Waheim SDK] App running in standalone mode - skipping initialization',
+      );
+      return;
+    }
+
     // Debug info
     console.log('[Waheim SDK] Initializing...');
     console.log('[Waheim SDK] Standalone mode:', utils.isStandalone());
@@ -1003,7 +1107,10 @@
 
     // Auto-initialize
     WaheimSDK.init();
-  });
+  };
+
+  // Auto-initialize by default
+  document.addEventListener('DOMContentLoaded', initializeSDK);
 
   // Also initialize immediately if DOM is already loaded
   if (document.readyState === 'loading') {
@@ -1014,6 +1121,6 @@
     console.log('[Waheim SDK] Standalone mode:', utils.isStandalone());
     console.log('[Waheim SDK] Mobile:', utils.isMobile());
     console.log('[Waheim SDK] Dark mode:', utils.isDarkMode());
-    WaheimSDK.init();
+    initializeSDK();
   }
 })(window);
