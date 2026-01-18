@@ -1,3 +1,4 @@
+import { GenerateSW } from '@aaroon/workbox-rspack-plugin';
 import { defineConfig } from '@rsbuild/core';
 import { pluginReact } from '@rsbuild/plugin-react';
 import { tanstackRouter } from '@tanstack/router-plugin/rspack';
@@ -15,6 +16,7 @@ export default defineConfig({
           generatedRouteTree: 'src/route-tree.gen.ts',
           routeFileIgnorePrefix: '___',
         }),
+        envConfig.bunEnv === 'production' && new GenerateSW({}),
       ],
     },
   },
@@ -26,5 +28,8 @@ export default defineConfig({
     port: envConfig.port,
     base: envConfig.base,
     historyApiFallback: true,
+  },
+  dev: {
+    progressBar: true,
   },
 });

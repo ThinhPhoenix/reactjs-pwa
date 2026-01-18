@@ -1,5 +1,6 @@
-import { createFileRoute } from '@tanstack/react-router';
+import pkg from '@/../package.json';
 import i18n from '@/helpers/i18n';
+import { createFileRoute } from '@tanstack/react-router';
 import { Button } from './___shared/ui/button';
 import DatePicker from './___shared/ui/date-picker';
 import DateRangePicker from './___shared/ui/date-range-picker';
@@ -10,6 +11,7 @@ import { Textarea } from './___shared/ui/textarea';
 import ThemeToggle from './___shared/ui/theme-toggle';
 import TimePicker from './___shared/ui/time-picker';
 import TimeRangePicker from './___shared/ui/time-range-picker';
+import { envConfig } from '@/helpers/constants/env-config';
 
 export const Route = createFileRoute('/')({
   component: RouteComponent,
@@ -24,7 +26,9 @@ function RouteComponent() {
       </div>
       <h1>Buttons</h1>
       <div className="flex flex-wrap gap-2">
-        <Button>{i18n.t('common:loadTodos')}</Button>
+        <Button onClick={() => window.location.reload()}>
+          {i18n.t('common:loadTodos')}
+        </Button>
         <Button variant={'destructive'}>{i18n.t('common:loadTodos')}</Button>
         <Button variant={'ghost'}>{i18n.t('common:loadTodos')}</Button>
         <Button variant={'link'}>{i18n.t('common:loadTodos')}</Button>
@@ -44,6 +48,9 @@ function RouteComponent() {
         <TimeRangePicker />
         <Textarea />
         <Switch />
+      </div>
+      <div className='fixed bottom-0 left-0 w-full text-center mb-2'>
+        <p>waheim - {pkg.version} - {envConfig.bunEnv}</p>
       </div>
     </div>
   );

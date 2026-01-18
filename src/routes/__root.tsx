@@ -1,5 +1,5 @@
 import { createRootRoute, Outlet } from '@tanstack/react-router';
-import { ThemeProvider } from '@/providers/theme-provider';
+import React from 'react';
 
 export const Route = createRootRoute({
   component: RootComponent,
@@ -7,12 +7,8 @@ export const Route = createRootRoute({
 
 function RootComponent() {
   return (
-    <ThemeProvider
-      attribute="class"
-      defaultTheme="system"
-      enableSystem
-    >
+    <React.Fragment>
       <Outlet />
-    </ThemeProvider>
+    </React.Fragment>
   );
 }

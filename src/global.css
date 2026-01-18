@@ -121,7 +121,6 @@
   body,
   #root {
     overflow-x: hidden;
-    touch-action: pan-y;
     width: 100%;
   }
   body {
