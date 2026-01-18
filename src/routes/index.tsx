@@ -11,7 +11,6 @@ import { Textarea } from './___shared/ui/textarea';
 import ThemeToggle from './___shared/ui/theme-toggle';
 import TimePicker from './___shared/ui/time-picker';
 import TimeRangePicker from './___shared/ui/time-range-picker';
-import { envConfig } from '@/helpers/constants/env-config';
 
 export const Route = createFileRoute('/')({
   component: RouteComponent,
@@ -49,8 +48,8 @@ function RouteComponent() {
         <Textarea />
         <Switch />
       </div>
-      <div className='fixed bottom-0 left-0 w-full text-center mb-2'>
-        <p>waheim - {pkg.version} - {envConfig.bunEnv}</p>
+      <div className="fixed bottom-0 left-0 w-full text-center mb-2">
+        <p>Version: {pkg.version}</p>
       </div>
     </div>
   );
