@@ -55,49 +55,9 @@
     <!-- End Single Page Apps for GitHub Pages -->
 
     <script src="./waheim-sdk.js"></script>
-    <script>
-      // Debug script
-      window.addEventListener('load', () => {
-        console.log('[Debug] Page loaded');
-        console.log(
-          '[Debug] WaheimSDK available:',
-          typeof window.WaheimSDK !== 'undefined',
-        );
-        console.log(
-          '[Debug] Standalone detection:',
-          window.WaheimSDK ? window.WaheimSDK.isStandalone() : 'SDK not loaded',
-        );
-
-        // Test drawer after 3 seconds
-        setTimeout(() => {
-          console.log('[Debug] Testing drawer...');
-          if (window.WaheimSDK) {
-            window.WaheimSDK.forceShowDrawer();
-          }
-        }, 3000);
-      });
-    </script>
   </head>
 
   <body>
     <div id="root"></div>
-
-    <!-- Test button for SDK -->
-    <!-- <div style="position: fixed; top: 10px; right: 10px; z-index: 1000">
-      <button
-        onclick="window.waheimSDK.forceShowDrawer()"
-        style="
-          background: #667eea;
-          color: white;
-          border: none;
-          padding: 8px 16px;
-          border-radius: 8px;
-          cursor: pointer;
-          font-size: 14px;
-        "
-      >
-        Test Drawer
-      </button>
-    </div> -->
   </body>
 </html>

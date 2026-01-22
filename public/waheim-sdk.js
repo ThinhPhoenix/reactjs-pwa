@@ -9,7 +9,7 @@
   const utils = {
     // Check if app is in standalone mode
     isStandalone: () => {
-      // Multiple detection methods for PWA standalone mode
+      // Only check actual PWA display modes - NOT navigation type or service worker
       const displayModeStandalone = window.matchMedia(
         '(display-mode: standalone)',
       ).matches;
@@ -21,24 +21,14 @@
       ).matches;
       const iosStandalone = window.navigator.standalone === true;
 
-      // Check for PWA manifest features that indicate standalone mode
-      const hasStandaloneFeatures =
-        window.matchMedia('(display-mode: standalone)').matches ||
-        window.matchMedia('(display-mode: fullscreen)').matches ||
-        window.matchMedia('(display-mode: minimal-ui)').matches ||
-        window.navigator.standalone === true ||
-        // Additional check: if the app was launched from home screen
-        (window.performance &&
-          window.performance.getEntriesByType('navigation')[0]?.type ===
-            'navigate') ||
-        // Check if running as PWA (no browser UI visible)
-        window.location.search.includes('source=pwa') ||
-        // Check for service worker control in standalone context
-        (navigator.serviceWorker &&
-          navigator.serviceWorker.controller &&
-          !window.matchMedia('(display-mode: browser)').matches);
+      // Only these checks are reliable for detecting actual PWA standalone mode
+      const isStandalone =
+        displayModeStandalone ||
+        displayModeFullscreen ||
+        displayModeMinimalUI ||
+        iosStandalone;
 
-      return hasStandaloneFeatures;
+      return isStandalone;
     },
 
     // Check if running on mobile
@@ -914,8 +904,8 @@
     init: function (options = {}) {
       const config = {
         autoShow: true,
-        delay: 2000,
-        showOnce: true,
+        delay: 500,
+        showOnce: false,
         ...options,
       };
 
@@ -1017,15 +1007,6 @@
         return false;
       }
 
-      // Check if already shown
-      if (config.showOnce) {
-        const shown = localStorage.getItem('waheim_drawer_shown');
-        if (shown) {
-          console.log('  - ❌ Blocked: Already shown before');
-          return false;
-        }
-      }
-
       console.log('  - ✅ Should show drawer');
       return true;
     },
@@ -1050,11 +1031,6 @@
 
       await this.drawer.create(drawerOptions);
       this.drawer.open();
-
-      // Mark as shown
-      if (options.showOnce !== false) {
-        localStorage.setItem('waheim_drawer_shown', 'true');
-      }
 
       return this;
     },
@@ -1103,24 +1079,30 @@
     console.log('[Waheim SDK] Standalone mode:', utils.isStandalone());
     console.log('[Waheim SDK] Mobile:', utils.isMobile());
     console.log('[Waheim SDK] Dark mode:', utils.isDarkMode());
-    console.log('[Waheim SDK] User Agent:', window.navigator.userAgent);
 
     // Auto-initialize
     WaheimSDK.init();
   };
 
-  // Auto-initialize by default
-  document.addEventListener('DOMContentLoaded', initializeSDK);
+  // Track if SDK has been initialized
+  let sdkInitialized = false;
 
-  // Also initialize immediately if DOM is already loaded
-  if (document.readyState === 'loading') {
-    // DOM is still loading, wait for DOMContentLoaded
-  } else {
-    // DOM is already loaded, initialize immediately
-    console.log('[Waheim SDK] DOM already loaded, initializing immediately...');
-    console.log('[Waheim SDK] Standalone mode:', utils.isStandalone());
-    console.log('[Waheim SDK] Mobile:', utils.isMobile());
-    console.log('[Waheim SDK] Dark mode:', utils.isDarkMode());
+  // Wrapper to prevent multiple initializations
+  const safeInitialize = () => {
+    if (sdkInitialized) {
+      return;
+    }
+    sdkInitialized = true;
     initializeSDK();
+  };
+
+  // Simple initialization: wait for DOM to be ready
+  if (document.readyState === 'loading') {
+    // DOM is still loading, wait for it
+    document.addEventListener('DOMContentLoaded', safeInitialize);
+  } else {
+    // DOM is already ready, initialize immediately
+    safeInitialize();
   }
 })(window);
+
