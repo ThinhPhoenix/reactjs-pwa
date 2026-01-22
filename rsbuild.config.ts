@@ -3,10 +3,11 @@ import { defineConfig } from '@rsbuild/core';
 import { pluginReact } from '@rsbuild/plugin-react';
 import { tanstackRouter } from '@tanstack/router-plugin/rspack';
 import { envConfig } from './src/helpers/constants/env-config';
+import { createQRPlugin } from './waheim/qrcode';
 
 // Docs: https://rsbuild.rs/config/
 export default defineConfig({
-  plugins: [pluginReact()],
+  plugins: [pluginReact(), createQRPlugin(envConfig.port)],
   tools: {
     rspack: {
       plugins: [
