@@ -1105,4 +1105,3 @@
     safeInitialize();
   }
 })(window);
-
