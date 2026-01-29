@@ -1,5 +1,6 @@
 import type { RsbuildPlugin } from '@rsbuild/core';
 import { exec } from 'child_process';
+import os from 'os';
 import qrcode from 'qrcode-terminal';
 import { promisify } from 'util';
 
@@ -15,112 +16,37 @@ interface NetworkInterface {
 }
 
 export async function getNetworkIPs(): Promise<NetworkInterface[]> {
-  try {
-    const { stdout } = await execAsync('ipconfig');
-    const lines = stdout.split('\n');
-    const interfaces: NetworkInterface[] = [];
+  // Use Node's os.networkInterfaces for cross‑platform reliability
+  const interfacesObj = os.networkInterfaces();
+  const results: NetworkInterface[] = [];
 
-    let currentInterface: Partial<NetworkInterface> = {};
-    let inAdapter = false;
+  for (const [name, infos] of Object.entries(interfacesObj)) {
+    if (!infos) continue;
+    for (const info of infos) {
+      // Skip internal (loopback) interfaces unless they have a useful address
+      const isInternal = info.internal;
+      const address = info.address;
+      const family = info.family as 'IPv4' | 'IPv6';
+      const netmask = info.netmask;
+      const mac = info.mac;
 
-    for (const line of lines) {
-      const trimmed = line.trim();
+      // Build CIDR if possible
+      const cidr =
+        netmask && address ? `${address}/${netmaskToCIDR(netmask)}` : '';
 
-      if (
-        trimmed.startsWith('Ethernet adapter') ||
-        trimmed.startsWith('Wireless LAN adapter') ||
-        trimmed.startsWith('adapter')
-      ) {
-        if (currentInterface.address) {
-          interfaces.push(currentInterface as NetworkInterface);
-        }
-        currentInterface = {
-          address: '',
-          netmask: '',
-          family: 'IPv4' as const,
-          mac: '',
-          internal: false,
-          cidr: '',
-        };
-        inAdapter = true;
-        continue;
-      }
-
-      if (!inAdapter) continue;
-
-      if (trimmed.includes('IPv4 Address')) {
-        const match = trimmed.match(
-          /IPv4 Address[.\s]*:\s*([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3})/,
-        );
-        if (match && match[1]) {
-          currentInterface.address = match[1];
-          currentInterface.family = 'IPv4';
-        }
-      }
-
-      if (trimmed.includes('Subnet Mask')) {
-        const match = trimmed.match(
-          /Subnet Mask[.\s]*:\s*([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3})/,
-        );
-        if (match && match[1]) {
-          currentInterface.netmask = match[1];
-        }
-      }
-
-      if (trimmed.includes('Physical Address')) {
-        const match = trimmed.match(
-          /Physical Address[.\s]*:\s*([0-9A-Fa-f-]{17})/,
-        );
-        if (match && match[1]) {
-          currentInterface.mac = match[1];
-        }
-      }
-
-      if (trimmed.includes('IPv6 Address')) {
-        const match = trimmed.match(/IPv6 Address[.\s]*:\s*([0-9A-Fa-f:]+)/);
-        if (match && match[1]) {
-          const ipv6Interface = {
-            address: match[1],
-            netmask: '',
-            family: 'IPv6' as const,
-            mac: currentInterface.mac || '',
-            internal: false,
-            cidr: '',
-          };
-          interfaces.push(ipv6Interface);
-        }
-      }
+      results.push({
+        address,
+        netmask,
+        family,
+        mac,
+        internal: isInternal,
+        cidr,
+      });
     }
+  }
 
-    if (currentInterface.address) {
-      interfaces.push(currentInterface as NetworkInterface);
-    }
-
-    interfaces.forEach((iface) => {
-      if (iface.address && iface.netmask) {
-        iface.cidr = `${iface.address}/${netmaskToCIDR(iface.netmask)}`;
-      }
-      iface.internal =
-        !iface.address ||
-        (!iface.address.startsWith('192.') &&
-          !iface.address.startsWith('10.') &&
-          !iface.address.startsWith('172.'));
-    });
-
-    return interfaces.length > 0
-      ? interfaces
-      : [
-        {
-          address: '192.168.1.100',
-          netmask: '255.255.255.0',
-          family: 'IPv4',
-          mac: '00-00-00-00-00-00',
-          internal: false,
-          cidr: '192.168.1.100/24',
-        },
-      ];
-  } catch (error) {
-    console.error('Error getting network IPs:', error);
+  // Filter out empty entries (shouldn't happen) and ensure at least one fallback
+  if (results.length === 0) {
     return [
       {
         address: '192.168.1.100',
@@ -132,6 +58,7 @@ export async function getNetworkIPs(): Promise<NetworkInterface[]> {
       },
     ];
   }
+  return results;
 }
 
 function netmaskToCIDR(netmask: string): number {

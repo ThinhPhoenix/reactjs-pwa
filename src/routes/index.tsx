@@ -1,5 +1,5 @@
 import i18n from '@/helpers/i18n';
-import { createFileRoute } from '@tanstack/react-router';
+import { createFileRoute, useRouter } from '@tanstack/react-router';
 import { toast } from 'sonner';
 import { Button } from './___shared/ui/button';
 import DatePicker from './___shared/ui/date-picker';
@@ -17,6 +17,7 @@ export const Route = createFileRoute('/')({
 });
 
 function RouteComponent() {
+  const router = useRouter();
   return (
     <div className="p-4 flex flex-col gap-4">
       <div className="flex justify-between items-center">
@@ -30,7 +31,13 @@ function RouteComponent() {
         <Button onClick={() => window.location.reload()}>
           {i18n.t('common:loadTodos')}
         </Button>
-        <Button variant={'destructive'}>{i18n.t('common:loadTodos')}</Button>
+        <Button variant={'destructive'}
+        onClick={()=>{
+          router.navigate({
+            to: '/biometric'
+          })
+        }}
+        >{i18n.t('common:loadTodos')}</Button>
         <Button variant={'ghost'}>{i18n.t('common:loadTodos')}</Button>
         <Button variant={'link'}>{i18n.t('common:loadTodos')}</Button>
         <Button

@@ -1,6 +1,6 @@
 function generateRandomChallenge() {
-  let length = 32;
-  let randomValues = new Uint8Array(length);
+  const length = 32;
+  const randomValues = new Uint8Array(length);
   window.crypto.getRandomValues(randomValues);
   return randomValues;
 }
@@ -27,10 +27,10 @@ async function createPasskey({
     !navigator.credentials.create ||
     !navigator.credentials.get
   ) {
-    return alert('Your browser does not support the Web Authentication API');
+    return alert(configs?.unSupportedAlertText || 'Your browser does not support the Web Authentication API');
   }
 
-  let credentials = await navigator.credentials.create({
+  const credentials = await navigator.credentials.create({
     publicKey: {
       challenge: generateRandomChallenge(),
       rp: { name: configs?.rpName || 'Waheim', id: Window.location.hostname },
@@ -76,3 +76,10 @@ async function verifyPasskey() {
 }
 
 export { createPasskey, verifyPasskey };
+
+function useBiometric() {
+  return { createPasskey, verifyPasskey };
+}
+
+export default useBiometric;
+export { useBiometric };
