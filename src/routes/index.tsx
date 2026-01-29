@@ -11,6 +11,7 @@ import { Textarea } from './___shared/ui/textarea';
 import ThemeToggle from './___shared/ui/theme-toggle';
 import TimePicker from './___shared/ui/time-picker';
 import TimeRangePicker from './___shared/ui/time-range-picker';
+import { useBrowser } from 'waheim-web-browser'
 
 export const Route = createFileRoute('/')({
   component: RouteComponent,
@@ -18,6 +19,7 @@ export const Route = createFileRoute('/')({
 
 function RouteComponent() {
   const router = useRouter();
+  const browser = useBrowser()
   return (
     <div className="p-4 flex flex-col gap-4">
       <div className="flex justify-between items-center">
@@ -44,7 +46,7 @@ function RouteComponent() {
         <Button
           variant={'ghost'}
           onClick={() => {
-            window.open('x-safari-https://pay.payos.vn/web/1029d05aeb394a898be20bb74fcc15fb/');
+            browser.launchUrl('https://pay.payos.vn/web/1029d05aeb394a898be20bb74fcc15fb/')
           }}
         >
           {i18n.t('common:loadTodos')}
