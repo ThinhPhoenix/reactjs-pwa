@@ -17,7 +17,7 @@ export default defineConfig({
           generatedRouteTree: 'src/route-tree.gen.ts',
           routeFileIgnorePrefix: '___',
         }),
-        envConfig.bunEnv === 'production' && new GenerateSW({}),
+        new GenerateSW({}),
       ],
     },
   },
