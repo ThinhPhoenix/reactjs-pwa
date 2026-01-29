@@ -4,6 +4,12 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from '@/app';
 
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js');
+  });
+}
+
 const queryClient = new QueryClient();
 
 const rootEl = document.getElementById('root');
@@ -13,7 +19,7 @@ if (rootEl) {
     <React.StrictMode>
       <QueryClientProvider client={queryClient}>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-            <App />
+          <App />
         </ThemeProvider>
       </QueryClientProvider>
     </React.StrictMode>,
