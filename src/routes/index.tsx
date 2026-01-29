@@ -51,7 +51,11 @@ function RouteComponent() {
         >
           {i18n.t('common:loadTodos')}
         </Button>
-        <Button variant={'link'}>{i18n.t('common:loadTodos')}</Button>
+        <Button variant={'link'}
+          onClick={()=>{
+            browser.launchUrl('https://pay.payos.vn/web/1029d05aeb394a898be20bb74fcc15fb/', true)
+          }}
+        >{i18n.t('common:loadTodos')}</Button>
         <Button
           variant={'outline'}
           onClick={() => toast.info('This is a success toast!')}
