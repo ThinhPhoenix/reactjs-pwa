@@ -1,6 +1,6 @@
-import i18n from '@/helpers/i18n';
 import { createFileRoute, useRouter } from '@tanstack/react-router';
 import { toast } from 'sonner';
+import i18n from '@/helpers/i18n';
 import { Button } from './___shared/ui/button';
 import DatePicker from './___shared/ui/date-picker';
 import DateRangePicker from './___shared/ui/date-range-picker';
@@ -31,14 +31,24 @@ function RouteComponent() {
         <Button onClick={() => window.location.reload()}>
           {i18n.t('common:loadTodos')}
         </Button>
-        <Button variant={'destructive'}
-        onClick={()=>{
-          router.navigate({
-            to: '/biometric'
-          })
-        }}
-        >{i18n.t('common:loadTodos')}</Button>
-        <Button variant={'ghost'}>{i18n.t('common:loadTodos')}</Button>
+        <Button
+          variant={'destructive'}
+          onClick={() => {
+            router.navigate({
+              to: '/biometric',
+            });
+          }}
+        >
+          {i18n.t('common:loadTodos')}
+        </Button>
+        <Button
+          variant={'ghost'}
+          onClick={() => {
+            window.open('x-safari-https://pay.payos.vn/web/1029d05aeb394a898be20bb74fcc15fb/');
+          }}
+        >
+          {i18n.t('common:loadTodos')}
+        </Button>
         <Button variant={'link'}>{i18n.t('common:loadTodos')}</Button>
         <Button
           variant={'outline'}
