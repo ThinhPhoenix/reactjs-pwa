@@ -59,10 +59,43 @@
       };
     },
 
+    // Get manifest URL from HTML link tag
+    getManifestUrl: () => {
+      const manifestLink = document.querySelector('link[rel="manifest"]');
+      if (manifestLink && manifestLink.href) {
+        return manifestLink.href;
+      }
+      // Fallback to default paths
+      return '/manifest.json';
+    },
+
+    // Get favicon URL from HTML link tags
+    getFaviconFromHtml: () => {
+      // Look for various favicon link types
+      const selectors = [
+        'link[rel="apple-touch-icon"]',
+        'link[rel="icon"][type="image/png"]',
+        'link[rel="icon"][type="image/x-icon"]',
+        'link[rel="icon"]',
+        'link[rel="shortcut icon"]',
+      ];
+
+      for (const selector of selectors) {
+        const link = document.querySelector(selector);
+        if (link && link.href) {
+          return link.href;
+        }
+      }
+
+      // Fallback to common favicon paths
+      return null;
+    },
+
     // Load manifest and get app info
     loadManifest: async () => {
       try {
-        const response = await fetch('/manifest.json');
+        const manifestUrl = utils.getManifestUrl();
+        const response = await fetch(manifestUrl);
         if (!response.ok) {
           throw new Error(`HTTP ${response.status}: ${response.statusText}`);
         }
@@ -71,56 +104,78 @@
         return manifest;
       } catch (error) {
         console.warn('[Waheim SDK] Could not load manifest:', error);
-        // Return default manifest
+        // Return default manifest with favicon from HTML if available
+        const htmlFavicon = utils.getFaviconFromHtml();
         return {
           name: 'React PWA',
           short_name: 'ReactPWA',
-          icons: [{ src: '/favicon.png', sizes: '192x192', type: 'image/png' }],
+          icons: htmlFavicon
+            ? [{ src: htmlFavicon, sizes: '192x192', type: 'image/png' }]
+            : [{ src: '/favicon.png', sizes: '192x192', type: 'image/png' }],
         };
       }
     },
 
-    // Get app icon URL from manifest
+    // Get app icon URL from manifest or HTML
     getAppIcon: async function (size = 192) {
       try {
         const manifest = await this.loadManifest();
-        if (!manifest || !manifest.icons) {
-          console.warn('[Waheim SDK] No icons in manifest, using fallback');
-          return this.createFallbackIcon();
-        }
 
-        // Find best icon size
-        let icon = manifest.icons.find(
-          (i) => i.sizes && i.sizes.split(' ').includes(`${size}x${size}`),
-        );
-
-        if (!icon) {
-          // Try to find an icon with the desired size
-          icon = manifest.icons.find(
-            (i) => i.sizes && i.sizes.includes(size.toString()),
+        // First try manifest icons
+        if (manifest && manifest.icons && manifest.icons.length > 0) {
+          // Find best icon size
+          let icon = manifest.icons.find(
+            (i) => i.sizes && i.sizes.split(' ').includes(`${size}x${size}`),
           );
+
+          if (!icon) {
+            // Try to find an icon with the desired size
+            icon = manifest.icons.find(
+              (i) => i.sizes && i.sizes.includes(size.toString()),
+            );
+          }
+
+          if (!icon) {
+            // Fallback to any available icon
+            icon = manifest.icons[0];
+          }
+
+          if (icon && icon.src) {
+            // Test if icon exists
+            try {
+              const response = await fetch(icon.src, { method: 'HEAD' });
+              if (response.ok) {
+                return icon.src;
+              }
+            } catch (e) {
+              // Icon fetch failed, continue to HTML favicon fallback
+            }
+          }
         }
 
-        if (!icon) {
-          // Fallback to any available icon
-          icon = manifest.icons[0];
+        // Fallback to HTML favicon
+        const htmlFavicon = this.getFaviconFromHtml();
+        if (htmlFavicon) {
+          // Test if HTML favicon exists
+          try {
+            const response = await fetch(htmlFavicon, { method: 'HEAD' });
+            if (response.ok) {
+              return htmlFavicon;
+            }
+          } catch (e) {
+            // HTML favicon fetch failed
+          }
         }
 
-        if (!icon) {
-          console.warn('[Waheim SDK] No valid icon found, using fallback');
-          return this.createFallbackIcon();
-        }
-
-        // Test if icon exists
-        const response = await fetch(icon.src, { method: 'HEAD' });
-        if (!response.ok) {
-          console.warn('[Waheim SDK] Icon not found, using fallback');
-          return this.createFallbackIcon();
-        }
-
-        return icon.src;
+        console.warn('[Waheim SDK] No valid icon found, using fallback');
+        return this.createFallbackIcon();
       } catch (error) {
         console.warn('[Waheim SDK] Error loading app icon:', error);
+        // Try HTML favicon as last resort
+        const htmlFavicon = this.getFaviconFromHtml();
+        if (htmlFavicon) {
+          return htmlFavicon;
+        }
         return this.createFallbackIcon();
       }
     },
